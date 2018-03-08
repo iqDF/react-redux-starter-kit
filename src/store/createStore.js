@@ -1,51 +1,21 @@
-import { applyMiddleware, compose, createStore as createReduxStore } from 'redux'
+
+import { createStore, applyMiddleware, compose } from 'redux';
+import reducers from '../reducers/rootReducer';
 import thunk from 'redux-thunk'
-import { browserHistory } from 'react-router'
-import makeRootReducer from './reducers'
-import { updateLocation } from './location'
 
-const createStore = (initialState = {}) => {
-  // ======================================================
-  // Middleware Configuration
-  // ======================================================
-  const middleware = [thunk]
-
-  // ======================================================
-  // Store Enhancers
-  // ======================================================
-  const enhancers = []
-  let composeEnhancers = compose
-
-  if (__DEV__) {
-    if (typeof window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ === 'function') {
-      composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    }
-  }
-
-  // ======================================================
-  // Store Instantiation and HMR Setup
-  // ======================================================
-  const store = createReduxStore(
-    makeRootReducer(),
-    initialState,
-    composeEnhancers(
-      applyMiddleware(...middleware),
-      ...enhancers
+export default function configureStore() {
+  const enhancer = compose(
+    applyMiddleware(
+      thunk
     )
   )
-  store.asyncReducers = {}
-
-  // To unsubscribe, invoke `store.unsubscribeHistory()` anytime
-  store.unsubscribeHistory = browserHistory.listen(updateLocation(store))
+  const store = createStore(reducers, enhancer)
 
   if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const reducers = require('./reducers').default
-      store.replaceReducer(reducers(store.asyncReducers))
+    module.hot.accept(() => {
+      const nextRootReducer = require('../reducers/rootReducer').default
+      store.replaceReducer(nextRootReducer)
     })
   }
-
   return store
 }
-
-export default createStore
