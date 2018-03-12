@@ -1,12 +1,16 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
-import { Provider } from 'react-redux'
+
 import PropTypes from 'prop-types'
 
-class App extends React.Component {
-    static propTypes = {
-        store: PropTypes.object.isRequired,
+class Test extends React.Component {
+    render() {
+        return (
+            <h1>No Redux</h1>
+        )
     }
+}
+class App extends React.Component {
 
     shouldComponentUpdate() {
         return false
@@ -14,13 +18,11 @@ class App extends React.Component {
 
     render() {
         return (
-            <Provider store={this.props.store}>
-                <BrowserRouter>
-                    <Switch>
-                      
-                    </Switch>
-                </BrowserRouter>
-            </Provider>
+            <BrowserRouter>
+                <Switch>
+                    <Route path='/' component={Test} />
+                </Switch>
+            </BrowserRouter>
         )
     }
 }
